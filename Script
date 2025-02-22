@@ -1,0 +1,1001 @@
+-- Ideal for getting BAN!
+
+if not game:IsLoaded() then
+	game.Loaded:Wait()
+end
+
+local Plr = game.Players.LocalPlayer
+
+local TotalInfects = Plr.Stats.TotalInfects
+local MonthlyInfects = Plr.Stats.MonthlyInfects
+
+local DeathCause = Plr.Stats.DeathCause
+local DeathLocation = Plr.Stats.DeathLocation
+local CurrentLocation = Plr.Stats.CurrentLocation
+
+local Exp = Plr.Stats.Exp
+local Lvl = Plr.Stats.Level
+local Coins = Plr.Stats.SmileCoins
+local Device = Plr.Stats.LastInput
+local PlayTime = Plr.Stats.Playtime
+
+local TotalKills = Plr.Stats.TotalKills
+local TotalEliminationWins = Plr.Stats.TotalEliminationWins
+
+-- Custom Toxic Instances --
+
+local Hugs_In_Row = 0
+
+local Total_Resets = 0
+local Total_RageQuits = 0
+
+local maxDistance = math.huge
+
+game:GetService("Chat").BubbleChatEnabled = false
+game.TextChatService.BubbleChatConfiguration.Enabled = false
+
+local Died_Debounce = false
+
+-- Hugs In Row Gui Instances --
+
+local Hugs_In_Row_Gui = Instance.new("ScreenGui")
+Hugs_In_Row_Gui.ResetOnSpawn = false
+Hugs_In_Row_Gui.IgnoreGuiInset = true
+Hugs_In_Row_Gui.Name = "Hugs_In_Row_Gui"
+Hugs_In_Row_Gui.Parent = Plr.PlayerGui
+
+local Frame = Instance.new("Frame")
+Frame.Size = UDim2.new(0.132, 0, 0.301, 0)
+Frame.BackgroundTransparency = 1
+Frame.Position = UDim2.new(0.434, 0, 0, 0)
+Frame.Name = "Main_Frame"
+Frame.Parent = Hugs_In_Row_Gui
+
+local Icon = Instance.new("ImageLabel")
+Icon.Name = "Icon"
+Icon.Parent = Frame
+Icon.Image = "rbxassetid://6078080375"
+Icon.Size = UDim2.new(1, 0, 1, 0)
+Icon.BackgroundTransparency = 1
+
+local Hugs_In_Row_Counter = Instance.new("TextLabel")
+Hugs_In_Row_Counter.Text = Hugs_In_Row
+Hugs_In_Row_Counter.TextColor3 = Color3.fromRGB(255, 0, 0)
+Hugs_In_Row_Counter.FontFace.Bold = true
+Hugs_In_Row_Counter.TextScaled = true
+Hugs_In_Row_Counter.TextStrokeTransparency = 0
+Hugs_In_Row_Counter.Name = "Counter"
+Hugs_In_Row_Counter.Parent = Frame
+Hugs_In_Row_Counter.Size = UDim2.new(0.5, 0, 0.2, 0)
+Hugs_In_Row_Counter.Position = UDim2.new(0.247, 0, 0.447, 0)
+Hugs_In_Row_Counter.BackgroundTransparency = 1
+
+-- Mad Players Instances --
+
+local Mad_Players_Gui = Instance.new("ScreenGui")
+Mad_Players_Gui.ResetOnSpawn = false
+Mad_Players_Gui.IgnoreGuiInset = true
+Mad_Players_Gui.Name = "Mad_Players_Gui"
+Mad_Players_Gui.Parent = Plr.PlayerGui
+
+-- Total Resets
+
+local Total_Resets_Frame = Instance.new("Frame")
+Total_Resets_Frame.Size = UDim2.new(0.175, 0, 0.201, 0)
+Total_Resets_Frame.BackgroundTransparency = 1
+Total_Resets_Frame.Position = UDim2.new(0.241, 0, 0.05, 0)
+Total_Resets_Frame.Name = "Main_Frame_Resets"
+Total_Resets_Frame.Parent = Mad_Players_Gui
+
+local Total_Resets_Title = Instance.new("TextLabel")
+Total_Resets_Title.Text = "Total Resets"
+Total_Resets_Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Total_Resets_Title.FontFace.Bold = true
+Total_Resets_Title.TextScaled = true
+Total_Resets_Title.TextStrokeTransparency = 0
+Total_Resets_Title.Name = "Title"
+Total_Resets_Title.Parent = Total_Resets_Frame
+Total_Resets_Title.Size = UDim2.new(1, 0, 0.301, 0)
+Total_Resets_Title.Position = UDim2.new(0, 0, 0, 0)
+Total_Resets_Title.BackgroundTransparency = 1
+
+local Total_Resets_Counter = Instance.new("TextLabel")
+Total_Resets_Counter.Text = Total_Resets
+Total_Resets_Counter.TextColor3 = Color3.fromRGB(255, 0, 0)
+Total_Resets_Counter.FontFace.Bold = true
+Total_Resets_Counter.TextScaled = true
+Total_Resets_Counter.TextStrokeTransparency = 0
+Total_Resets_Counter.Name = "Counter"
+Total_Resets_Counter.Parent = Total_Resets_Frame
+Total_Resets_Counter.Size = UDim2.new(1, 0, 0.301, 0)
+Total_Resets_Counter.Position = UDim2.new(0, 0, 0.339, 0)
+Total_Resets_Counter.BackgroundTransparency = 1
+
+-- Total Rage Quits
+
+local Total_Quits_Frame = Instance.new("Frame")
+Total_Quits_Frame.Size = UDim2.new(0.175, 0, 0.201, 0)
+Total_Quits_Frame.BackgroundTransparency = 1
+Total_Quits_Frame.Position = UDim2.new(0.583, 0, 0.05, 0)
+Total_Quits_Frame.Name = "Main_Frame_Quits"
+Total_Quits_Frame.Parent = Mad_Players_Gui
+
+local Total_Quits_Title = Instance.new("TextLabel")
+Total_Quits_Title.Text = "Total Rage Quits"
+Total_Quits_Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Total_Quits_Title.FontFace.Bold = true
+Total_Quits_Title.TextScaled = true
+Total_Quits_Title.TextStrokeTransparency = 0
+Total_Quits_Title.Name = "Title"
+Total_Quits_Title.Parent = Total_Quits_Frame
+Total_Quits_Title.Size = UDim2.new(1, 0, 0.301, 0)
+Total_Quits_Title.Position = UDim2.new(0, 0, 0, 0)
+Total_Quits_Title.BackgroundTransparency = 1
+
+local Total_Quits_Counter = Instance.new("TextLabel")
+Total_Quits_Counter.Text = Total_RageQuits
+Total_Quits_Counter.TextColor3 = Color3.fromRGB(255, 0, 0)
+Total_Quits_Counter.FontFace.Bold = true
+Total_Quits_Counter.TextScaled = true
+Total_Quits_Counter.TextStrokeTransparency = 0
+Total_Quits_Counter.Name = "Counter"
+Total_Quits_Counter.Parent = Total_Quits_Frame
+Total_Quits_Counter.Size = UDim2.new(1, 0, 0.301, 0)
+Total_Quits_Counter.Position = UDim2.new(0, 0, 0.339, 0)
+Total_Quits_Counter.BackgroundTransparency = 1
+
+-- Mounthly_Infects
+
+local MonthlyInfects_Gui = Instance.new("ScreenGui")
+MonthlyInfects_Gui.ResetOnSpawn = false
+MonthlyInfects_Gui.IgnoreGuiInset = true
+MonthlyInfects_Gui.Name = "MonthlyInfects"
+MonthlyInfects_Gui.Parent = Plr.PlayerGui
+
+local MonthlyInfects_Counter = Instance.new("TextLabel")
+local CurrentMonthlyInfects = MonthlyInfects.Value:split("_")
+MonthlyInfects_Counter.Text = CurrentMonthlyInfects[2]
+MonthlyInfects_Counter.TextColor3 = Color3.fromRGB(255, 255, 0)
+MonthlyInfects_Counter.FontFace.Bold = true
+MonthlyInfects_Counter.TextScaled = true
+MonthlyInfects_Counter.TextStrokeTransparency = 0
+MonthlyInfects_Counter.Name = "Counter"
+MonthlyInfects_Counter.Parent = MonthlyInfects_Gui
+MonthlyInfects_Counter.Size = UDim2.new(0.067, 0, 0.04, 0)
+MonthlyInfects_Counter.Position = UDim2.new(0.466, 0, 0.008, 0)
+MonthlyInfects_Counter.BackgroundTransparency = 1
+
+local function SayMsg(Text: string)
+	if game.TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
+		local MainTextChannel: TextChannel = game.TextChatService.TextChannels.RBXGeneral
+		MainTextChannel:SendAsync(Text)
+	elseif game.TextChatService.ChatVersion == Enum.ChatVersion.LegacyChatService then
+		local MainMessageSender: RemoteEvent = game.ReplicatedStorage.DefaultChatSystemChatEvents.SayMessageRequest
+		MainMessageSender:FireServer(Text, "All")
+	end
+end
+
+-- Hello message
+
+local HelloMsg = "Now you can brag to your friends about having met the most epic 👨‍💻 cheater 👨‍💻 in the Infectious Smile!"
+
+SayMsg(HelloMsg)
+
+
+-- Other Functions --
+
+local function SayCommonPhrase(nearestPlayer: Player)
+	
+	local Toxic_Table_Hug = {
+
+		"Surprise Surprise, I just hugged " .. nearestPlayer.DisplayName .. " between the arms! 😛",
+		"I just HUGGED " .. nearestPlayer.DisplayName .. "'s blokes body off! 😮",
+		"I just clicked on " .. nearestPlayer.DisplayName .. " and HUGGED EM!",
+		"That is some dodgy hugbot " .. nearestPlayer.DisplayName,
+		"OOF~ IT WAS SO JUICY 🤤, to be honest... Yes, " .. nearestPlayer.DisplayName,
+		"I just HUGGED " .. nearestPlayer.DisplayName .. " pretty STRONG! 🤗",
+		"Mmmm~ 😏 " .. nearestPlayer.DisplayName .. "! You are my local --> NEWBIE <-- :)",
+		nearestPlayer.DisplayName .. " just was HUGGED by " .. Plr.DisplayName,
+		"I just HUGGED " .. nearestPlayer.DisplayName .. "! Anyone can do it!",
+		"Just hugged " .. nearestPlayer.DisplayName .. " for the soft body! 🥵",
+		nearestPlayer.DisplayName .. " got some hugs by me 😜",
+		"I prepared to be accused of hugging by " .. nearestPlayer.DisplayName,
+		"Hey, " .. nearestPlayer.DisplayName .. ", if you wanna find MY MAIN, then you need to search Newbie_Official! Goodluck, HAHAHA!",
+		nearestPlayer.DisplayName .. ", Yo! Ty for INFECT! I have " .. Plr.Stats.TotalInfects.Value .. " hugged ppl! 😍",
+		"Ow~ 😏 " .. nearestPlayer.DisplayName .. ", sorry, but i will find you and hug AGAIN!",
+		nearestPlayer.DisplayName .. ", it is my own script, but you can get it from Internet.",
+		"I hugged person with " .. nearestPlayer.Stats.Level.Value .. " level and it was " .. nearestPlayer.DisplayName,
+		"Ooh~ 🤫 " .. "I have " .. Plr.Stats.SmileCoins.Value .. " Smile Coins by " .. nearestPlayer.DisplayName .. "! Tysm, dude!",
+		"Lets GO! I hugged " .. nearestPlayer.DisplayName .. "! 🤗",
+		"When I hug ppl, i get fun 🤣, is it right, " .. nearestPlayer.DisplayName,
+		nearestPlayer.DisplayName .. " had " .. nearestPlayer.Stats.Exp.Value .. " EXP when I hugged this kid!",
+		nearestPlayer.DisplayName .. " took MASSIVE L by ME! 😂",
+		"Hey, " .. nearestPlayer.DisplayName .. ", idk who are you, girl 🥵 or boi, just let me hug you in the next time! More and More!",
+		"Be SUS 🤨 - cool, Be HUGGED - more cool! Ye, " .. nearestPlayer.DisplayName,
+		"I have secret message for " .. nearestPlayer.DisplayName .. "! Message: Noob! 🤢",
+		nearestPlayer.DisplayName .. ", just let me uhh the uh when the uhh uh the uh~ 🤔",
+		"Mmm~ I gently hugged cute " .. nearestPlayer.DisplayName .. "... 🥵",
+		nearestPlayer.DisplayName .. ", calm down, touch grass and get my hugs 😳",
+		"WOW, MATES! 😎 " .. nearestPlayer.DisplayName .. " GOT BIG SMILE AND FINALLY HAPPY! YAY!" ,
+		"Bruh, " .. nearestPlayer.DisplayName .. ", can u help me? What i should do, if I am RobloxQueen's fan? 🥵",
+		"Am I DrotaTri_poRusski yes, " .. nearestPlayer.DisplayName,
+		"Yo, " .. nearestPlayer.DisplayName .. ", why you have only " .. nearestPlayer.Stats.TotalEliminationWins.Value .. " Elimination Wins? SO BAD, 😐, HAHAH!",
+		nearestPlayer.DisplayName .. ", I live within your walls! 🤫",
+		nearestPlayer.DisplayName .. ", will you slap me for 100M$? 🤤",
+		"Umm~ " .. nearestPlayer.DisplayName .. ", you are so $exy! Can I hug you again, pls? 🥵",
+		"Ugh... " .. nearestPlayer.DisplayName .. ", why u have only " .. nearestPlayer.Stats.TotalInfects.Value .. " infects?",
+		"NO WAY, This trash... I mean " .. nearestPlayer.DisplayName .. " killed " .. nearestPlayer.Stats.TotalKills.Value .. " POOR and HARMLESS smiles! 😰 It was a karma for you, KID!",
+		"Oh! Pretty sad, that " .. game.Teams.Human:GetPlayers()[math.random(1, #game.Teams.Human:GetPlayers())].DisplayName .. " didn't help " .. nearestPlayer.DisplayName .. " break out of my arms..." ,
+		"Hi, " .. nearestPlayer.DisplayName .. ", I think that ur look like uwucutesingle, U KNOW? 😍 I really like to hug you!",
+		"Pew... " .. nearestPlayer.DisplayName .. ", do you know that i made FORCE RESET for " .. Total_Resets .. " players! They are mad! 😒",
+		"Hohoho :D I made " .. Total_RageQuits .. " players RAGE QUIT! 😆 And hugged " .. nearestPlayer.DisplayName .. " rn!",
+		"Mmm~ 👅 " .. nearestPlayer.DisplayName .. ", you are so SWEETI 🤤 and nice... Ah~ can I hug you again, pls 🥵",
+		nearestPlayer.DisplayName .. ", you know that I'm all shaking with excitement, how could I hug you again... 🥵",
+		"I feel so GOOD, when hugging you, my beautiful 😊 " .. nearestPlayer.DisplayName .. "! 😏",
+		"Ah~ " .. nearestPlayer.DisplayName .. ", you are very attractive... 🤤! Wanna be alone with me 😏",
+		nearestPlayer.DisplayName .. " got SLAVIC EGG CLAMP! HAHAHAHAHAHA! LOL! 🤣",
+		"Am I TurtleWitheGun? Yes, " .. nearestPlayer.DisplayName,
+		"Ugh~ You so CUTE 🥰 and SOFT my, " .. nearestPlayer.DisplayName .. ", can i slap you pls? 🥵",
+		"Oh~ " .. nearestPlayer.DisplayName .. ", can I bang... Um~ I mean... You ofc? 🥵",
+		"YAY! I hugged " .. nearestPlayer.DisplayName .. ", who is playing in this game " .. math.round(nearestPlayer.Stats.Playtime.Value / 3600) .. " hours!",
+		"Hmm... 👌 Guys, I mean... I am just Notive! 😳 I'm in JAIL playing Roblox, LOL! 😎 Scary me, " .. nearestPlayer.DisplayName,
+		"Umm~ 🥵 Hey, " .. nearestPlayer.DisplayName .. ", can I ask u something? 😉 I just wanna sleep in bed... with... you. 🤤 You do not mind?",
+		"🤤 " .. nearestPlayer.DisplayName .. ", do you like it when my hands squeeze your soft body rn? 😊",
+		"Oh~ 😉 It's so nice... An unforgettable feeling, yes my favourite " .. nearestPlayer.DisplayName,
+		"Uh~ Hello, my " .. nearestPlayer.DisplayName .. ", 😉 --> 🤤 --> 🥵",
+		"🥰, " .. nearestPlayer.DisplayName,
+		"Yeah! " .. nearestPlayer.DisplayName .. ", I am not gonna lie... I love talking to 😳 miners 😳! Put me in jail, i do not care!!!" ,
+		nearestPlayer.DisplayName .. ", I swear to God, not $ I M P L I N G for a child! 😭",
+		"Um~, what is this white liquid dripping from me? 👅 HELP ME, " .. nearestPlayer.DisplayName,
+		"Oow~ Mmm~ 🤤 HeHe... I-i-i... Um 😏 " .. nearestPlayer.DisplayName .. ". I won't lie to you, but I 🥰 Strawberry 🥵",
+		"Do you know about Secret Picnic Notive's Animation, my sweety " .. nearestPlayer.DisplayName .. "... Would be nice, if i were Notive and You were Blue 😳",
+		"I prefer girls than boys... Is it okey, my " .. nearestPlayer.DisplayName .. " 🤭",
+		"No HUG = No SMILE, right " .. nearestPlayer.DisplayName .. "?",
+		"Ah~ 😊 " .. nearestPlayer.DisplayName .. " was hugged for potential HUMAN activity! 🤣",
+		"Imagine HUGGING " .. nearestPlayer.DisplayName .. " HAHAHAHAHA!",
+		"Hugs have already begun, u know " .. nearestPlayer.DisplayName .. "! 😜",
+		nearestPlayer.DisplayName .. " may or may not be HUGGED by Me 🙂",
+		"Can I spread your legs and 👅 there? Pls... My fav " .. nearestPlayer.DisplayName,
+		"Can I... I meant... Undress..." .. nearestPlayer.DisplayName .. " rn? 🥵",
+		"Ah~ How I want to sit next to you and... 👅 🥵 I'm sorry I can't keep talking about this, my beautiful " .. nearestPlayer.DisplayName,
+		"Uh... "..nearestPlayer.DisplayName..", 😊 Newbie 😊 wanted to say hi to you by the way!",
+		"Ay-Ay-Ay! Can I tell you something, ".. nearestPlayer.DisplayName.. ", I really like your legs 🥵, they are so beautiful, can I stroke them?",
+		"Wow~ Ah~ My little one, " .. nearestPlayer.DisplayName.. ", I'm ready 👅 your foots! 🤤",
+		"Sometimes, I shake a little when I hug people... 😏 But it feels so good, you know " .. nearestPlayer.DisplayName,
+		"Find and use this script too, my wonderful, " .. nearestPlayer.DisplayName,
+		"You make me so excited, my pretty one, " .. nearestPlayer.DisplayName.. "! 🥵",
+		"Ugh~ Mmm~ I can tell you a secret... 🤫 You have such curvy arms and fingers, aah~ 🥰 I can't stop thinking about it, my " .. nearestPlayer.DisplayName,
+		"When I lie down in my bed, 😴 I always think about you, my love " .. nearestPlayer.DisplayName,
+		"Have you ever talked to a girl or not? 🤭 This is my first time personally 🥰 You know, " .. nearestPlayer.DisplayName,
+		"White Pencil 🍌 is better than Black Pencil 🍌... That's my opinion, " .. nearestPlayer.DisplayName,
+
+	}
+
+	local Choosen_Phrase = Toxic_Table_Hug[math.random(1, #Toxic_Table_Hug)]
+
+	SayMsg(Choosen_Phrase)
+
+	table.clear(Toxic_Table_Hug)
+	
+end
+
+local function SayUncommonPhrase(nearestPlayer: Player)
+	
+	local Plr_Age = "Nice, 😎 " .. nearestPlayer.DisplayName .. " is playing in Roblox " .. nearestPlayer.AccountAge .. " days..."
+	local Plr_Verified = nil
+	local Plr_In_Group = nil
+	local Plr_Groups = nil
+	local Plr_Sub_To_robloxmoneynot = nil
+	local Plr_Old = nil -- ! Won't work if player's inventory is hidden !
+	local Premium_Plr = nil
+	local Plr_Ping = nil
+	local Plr_Device = nil
+	local Plr_With_Friends = nil
+	local Plr_IP = "HEY YOU! " .. nearestPlayer.DisplayName .. ", I wanna tell you one of my secrets 🤐! My LocaleId is " .. Plr.LocaleId 
+	local Plr_EventData = "Have you participated in events in this game, " .. nearestPlayer.DisplayName .. "? I can tell about that " .. nearestPlayer.Stats.EventData.Value 
+
+	-- Verify func
+
+	if nearestPlayer.HasVerifiedBadge == true then
+		Plr_Verified = "Pretty good! 👍 " .. nearestPlayer.DisplayName .. "'s acc fully protected!"
+	else
+		Plr_Verified = "Uh... Hah! 🤨 Listen to me now! " .. nearestPlayer.DisplayName .. ", you better verify your acc otherwise there will be consequences!"
+	end
+
+	-- Sub to laughabehaha group func
+
+	if nearestPlayer:IsInGroup(5054016) then
+		Plr_In_Group = "WOW! " .. nearestPlayer.DisplayName .. " is in a group laughablehaha! He is a loyal player of this game! 😲"
+	else
+		Plr_In_Group = "Bruh! Hey, kid 🤣 " .. nearestPlayer.DisplayName .. " you need to join in laughablehaha group! Else admins will find you and BAN! 💀"
+	end
+
+	-- Check random group func
+
+	local Group_List = game:GetService("GroupService"):GetGroupsAsync(nearestPlayer.UserId)
+
+	if Group_List and #Group_List > 0 then
+
+		local Random_Group = Group_List[math.random(1, #Group_List)]
+
+		Plr_Groups = nearestPlayer.DisplayName .. " is in " .. Random_Group["Name"] .. " group and have " .. Random_Group["Role"] .. " role! Cool, yes? 😉" 
+
+	end
+	-- Sub to robloxmoneynot func
+
+	if nearestPlayer.FollowUserId == 1959555653 then
+		Plr_Sub_To_robloxmoneynot = "Thank you 😎 for following robloxmoneynot, my buddy " .. nearestPlayer.DisplayName
+	else
+		Plr_Sub_To_robloxmoneynot = "Hey BOT! 🤢 " .. nearestPlayer.DisplayName .. " You urgently need to follow to robloxmoneynot! 👨‍💻 Otherwise, he will find you and wait under your bed tonight! 😳"
+	end
+
+	-- Plr Old func
+
+	local Success, Error_Msg = pcall(function()
+
+		if game.MarketplaceService:PlayerOwnsAsset(nearestPlayer, 1080951) then
+			Plr_Old = "OMG! " .. nearestPlayer.DisplayName .. " is Roblox OG! He had BUILDER CLUB! Fat respect for you! 👍"
+		else
+			Plr_Old = "LOL! " .. nearestPlayer.DisplayName .. " didn't have time to buy a BUILDERS CLUB 😰 or maybe just haven't created an acc at this time! 🤣"
+		end
+
+	end)
+
+	if Error_Msg then
+		Plr_Old = "Bruh! Damn! SUCK! I can't see " .. nearestPlayer.DisplayName .. "'s inventory!"
+	end
+
+	-- Premium_Plr
+
+	if nearestPlayer.MembershipType == Enum.MembershipType.Premium then
+		Premium_Plr = "LOL GUYS! 😜 I punished totally P2W player with Premium! 🤑 It was unskill " .. nearestPlayer.DisplayName
+	else
+		Premium_Plr = "🤣 " .. nearestPlayer.DisplayName .. " you need to buy Roblox Premium and become P2W! 🤑 Deal with it..."
+	end
+
+	-- Plr_Ping
+
+	local Current_Ping = math.round(Plr:GetNetworkPing() * 1000 + 50)
+
+	if Current_Ping > 150 then
+		Plr_Ping = "Damn! HEY U, " .. nearestPlayer.DisplayName .. ", do u know, that " .. Plr.DisplayName .. Current_Ping .. " ping! 💀"
+	else
+		Plr_Ping = "Yo! " .. Plr.DisplayName .. " pretty low ping = " .. Current_Ping .. "! Very GOOD! 😄 Do u know, " .. nearestPlayer.DisplayName .. "!"
+	end
+
+	-- Plr_Device
+
+	Plr_Device = "Hey! " .. nearestPlayer.DisplayName .. " do you know that " .. Plr.DisplayName .. " is playing in Roblox on " .. Plr.Stats.LastInput.Value .. " now!"
+
+	-- Plr_With_Friends
+
+	local Success, Error = pcall(function()
+
+		local Plrs = game.Players:GetPlayers()
+		local Players = game:GetService("Players")
+
+		local USERNAME = nearestPlayer.Name
+
+		local function iterPageItems(pages)
+			return coroutine.wrap(function()
+				local pagenum = 1
+				while true do
+					for _, item in ipairs(pages:GetCurrentPage()) do
+						coroutine.yield(item, pagenum)
+					end
+					if pages.IsFinished then
+						break
+					end
+					pages:AdvanceToNextPageAsync()
+					pagenum = pagenum + 1
+				end
+			end)
+		end
+
+		local userId = Players:GetUserIdFromNameAsync(USERNAME)
+		local friendPages = Players:GetFriendsAsync(userId)
+		local Usernames = {}
+		for item, _pageNo in iterPageItems(friendPages) do
+			table.insert(Usernames, item.Username)
+		end
+
+		local FriendsInGame = {}
+
+		local Matches = 0
+
+		for _, Friend in pairs(Usernames) do
+			for _, Other_Plr in ipairs(Plrs) do
+				if Friend == Other_Plr.Name then
+					table.insert(FriendsInGame, Other_Plr)
+					Matches += 1
+				end
+			end
+		end
+
+		if Matches ~= 0 then
+
+			local Random_Friend = FriendsInGame[math.random(1, #FriendsInGame)]
+
+			Plr_With_Friends = "Ugh! 🤤 Guys, do you know, that " .. nearestPlayer.DisplayName .. " plays with his friend named " .. Random_Friend.DisplayName .. "! It is so cute 😊"
+
+			Matches = 0
+			table.clear(FriendsInGame)
+			table.clear(Usernames)
+
+		else
+
+			Matches = 0
+			table.clear(FriendsInGame)
+
+			local Players = game:GetService("Players")
+
+			local USERNAME = nearestPlayer.Name
+
+			local function iterPageItems(pages)
+				return coroutine.wrap(function()
+					local pagenum = 1
+					while true do
+						for _, item in ipairs(pages:GetCurrentPage()) do
+							coroutine.yield(item, pagenum)
+						end
+						if pages.IsFinished then
+							break
+						end
+						pages:AdvanceToNextPageAsync()
+						pagenum = pagenum + 1
+					end
+				end)
+			end
+
+			local userId = Players:GetUserIdFromNameAsync(USERNAME)
+			local friendPages = Players:GetFriendsAsync(userId)
+			local Usernames = {}
+			for item, _pageNo in iterPageItems(friendPages) do
+				table.insert(Usernames, item.DisplayName)
+			end
+
+			if #Usernames ~= 0 then
+
+				Plr_With_Friends = "Oof~, " .. nearestPlayer.DisplayName .. ", I bet I know who you're friends with? 😉 The name of one of your friends is " .. Usernames[math.random(1, #Usernames)] .. "! 🥰"
+
+			else
+
+				Plr_With_Friends = "Unfortunately " .. nearestPlayer.DisplayName .. " has no friends... 😭 🤣"
+
+			end
+
+			table.clear(Usernames)
+
+		end
+
+	end)	
+
+	-- Say func
+
+	local Toxic_Table_Hug = {
+
+		Plr_EventData, 
+		Plr_Age, 
+		Plr_Verified,
+		Plr_In_Group,
+		Plr_Groups, 
+		Plr_Sub_To_robloxmoneynot,
+		Plr_Old,
+		Premium_Plr, 
+		Plr_Ping,
+		Plr_Device,
+		Plr_With_Friends, 
+		Plr_IP,
+		Plr_EventData,
+
+	}
+
+	local Choosen_Phrase = Toxic_Table_Hug[math.random(1, #Toxic_Table_Hug)]
+
+	SayMsg(Choosen_Phrase)
+
+	table.clear(Toxic_Table_Hug)
+	
+end
+
+local function Hugstreak()
+	
+	local HugstreakPhrase
+	
+	if Hugs_In_Row == 5 then
+
+		local LVL_sound = Instance.new("Sound")
+		LVL_sound.SoundId = "rbxassetid://723054723"
+		LVL_sound.Parent = Plr.PlayerGui
+		LVL_sound:Play()
+		game.Debris:AddItem(LVL_sound, 4)
+		
+		HugstreakPhrase = "|oOoOo| " .. Plr.DisplayName .. " GOT HUGGING SPREE!!! (5 HUMANS IN ROW) |oOoOo|"
+	
+	elseif Hugs_In_Row == 10 then
+
+		local LVL_sound = Instance.new("Sound")
+		LVL_sound.SoundId = "rbxassetid://937902490"
+		LVL_sound.Parent = Plr.PlayerGui
+		LVL_sound:Play()
+		game.Debris:AddItem(LVL_sound, 4)
+
+		HugstreakPhrase = "|oOoOo| " .. Plr.DisplayName .. " GOT DOMINATING!!! (10 HUMANS IN ROW) |oOoOo|"
+
+	elseif Hugs_In_Row == 25 then
+
+		local LVL_sound = Instance.new("Sound")
+		LVL_sound.SoundId = "rbxassetid://723055264"
+		LVL_sound.Parent = Plr.PlayerGui
+		LVL_sound:Play()
+		game.Debris:AddItem(LVL_sound, 4)
+
+		HugstreakPhrase = "|oOoOo| " .. Plr.DisplayName .. " GOT MEGA HUG!!! (25 HUMANS IN ROW) |oOoOo|"
+
+	elseif Hugs_In_Row == 50 then
+
+		local LVL_sound = Instance.new("Sound")
+		LVL_sound.SoundId = "rbxassetid://205012175"
+		LVL_sound.Parent = Plr.PlayerGui
+		LVL_sound:Play()
+		game.Debris:AddItem(LVL_sound, 4)
+
+		HugstreakPhrase = "|oOoOo| " .. Plr.DisplayName .. " GOT UNSTOPPABLE!!! (50 HUMANS IN ROW) |oOoOo|"
+
+	elseif Hugs_In_Row == 75 then
+
+		local LVL_sound = Instance.new("Sound")
+		LVL_sound.SoundId = "rbxassetid://937906049"
+		LVL_sound.Parent = Plr.PlayerGui
+		LVL_sound:Play()
+		game.Debris:AddItem(LVL_sound, 4)
+
+		HugstreakPhrase = "|oOoOo| " .. Plr.DisplayName .. " GOT WICKED SICK!!! (75 HUMANS IN ROW) |oOoOo|"
+
+	elseif Hugs_In_Row == 100 then
+
+		local LVL_sound = Instance.new("Sound")
+		LVL_sound.SoundId = "rbxassetid://6350854289"
+		LVL_sound.Parent = Plr.PlayerGui
+		LVL_sound:Play()
+		game.Debris:AddItem(LVL_sound, 4)
+
+		HugstreakPhrase = "|oOoOo| " .. Plr.DisplayName .. " GOT MONSTER HUG!!! (100 HUMANS IN ROW) |oOoOo|"
+
+	elseif Hugs_In_Row == 250 then
+
+		local LVL_sound = Instance.new("Sound")
+		LVL_sound.SoundId = "rbxassetid://7463103082"
+		LVL_sound.Parent = Plr.PlayerGui
+		LVL_sound:Play()
+		game.Debris:AddItem(LVL_sound, 4)
+
+		HugstreakPhrase = "|oOoOo| " .. Plr.DisplayName .. " GOT GODLIKE!!! (250 HUMANS IN ROW) |oOoOo|" 
+
+	end
+	
+	if HugstreakPhrase ~= nil then
+		SayMsg(HugstreakPhrase)
+	end
+	
+end
+
+local function SayLeavePhrase(Quit_Plr: Player)
+	
+	local Toxic_Table_Leave = {
+
+		"LOL! IMAGINE! " .. Quit_Plr.DisplayName .. " RAGE QUITED GAME! 🤢",
+		"OMG, GUYS! " .. Quit_Plr.DisplayName .. " LEFT THE GAME! 🤢",
+		"Ow! Pretty sad, but " .. Quit_Plr.DisplayName .. " left us FOREVER! 😆",
+		"SUCK! " .. Quit_Plr.DisplayName .. " just left!",
+		"Aah~ 😜 Funny... I made " .. Quit_Plr.DisplayName .. " RAGE QUIT!",
+		"I just mugged " .. Quit_Plr.DisplayName .. " right off! 💀",
+		"I did a lot of emotional damage to " .. Quit_Plr.DisplayName .. " SO SAD... 🤣",
+		Quit_Plr.DisplayName .. " just left the game and gave me last 5 Smile Coins!",
+		"Sup, guys! CRY ABOUT IT! " .. Quit_Plr.DisplayName .. " rage quited the game, 😂!",
+		"LOL! 😮! " .. Quit_Plr.DisplayName .. " went to call the admins so that they banned me!",
+
+	}
+	
+	local ChoosenPhrase = Toxic_Table_Leave[math.random(1, #Toxic_Table_Leave)]
+	
+	SayMsg(ChoosenPhrase)
+	
+	table.clear(Toxic_Table_Leave)
+	
+end
+
+local function SaySelfResetPhrase(Choosen_Reset_Plr: Player)
+	
+	local Reset_MSG = "GET BETTER, KID! " .. Choosen_Reset_Plr.DisplayName .. " just RESETED 👎 in " .. Choosen_Reset_Plr.Stats.DeathLocation.Value .. "! MASSIVE L FOR EM! 💀"
+
+	SayMsg(Reset_MSG)
+	
+end
+
+local function SayDiedPhrase(Current_DeathCause, Current_DeathLocation)
+	
+	local Died_MSG = nil
+
+	if Hugs_In_Row > 0 then
+		Died_MSG = Plr.DisplayName .. " DIED by " .. Current_DeathCause .. " in " .. Current_DeathLocation .. "! And he LOST HUGSTREAK = " .. Hugs_In_Row ..  "! 😭"
+	else
+		Died_MSG = Plr.DisplayName .. " DIED by " .. Current_DeathCause .. " in " .. Current_DeathLocation .. "! 😰"
+	end
+
+	SayMsg(Died_MSG)
+	
+end
+
+local function StayWhenAdminCame()
+	
+	local SorryMsg = "😥 I am so sorry, guys... 😥"
+	
+	SayMsg(SorryMsg)
+	
+end
+
+local function AdminJoinedPhrase(Other_Plr: Player, Other_Plr_Role)
+	
+	local StaffAlertMsg = "❗ STAFF ALERT ❗ " .. Other_Plr.DisplayName .. " has joined the game! He is " .. Other_Plr_Role .. " in game's group! So I think that i am already DEAD... 💀"
+	
+	for i = 1, 3 do
+		SayMsg(StaffAlertMsg)
+	end
+	
+end
+
+local function SayLvlChange(LVL)
+	
+	local LvlChangeMsg = "|><><><| " .. Plr.DisplayName .. " just reached " .. LVL .. " LEVEL!!! |><><><|"
+	
+	SayMsg(LvlChangeMsg)
+	
+end
+
+-- Main Functions --
+
+TotalInfects.Changed:Connect(function(Value)
+		
+	Hugs_In_Row += 1
+
+	Hugs_In_Row_Counter.Text = Hugs_In_Row
+
+	game.TweenService:Create(game.Lighting, TweenInfo.new(0.25, Enum.EasingStyle.Linear), {Ambient = Color3.fromRGB(255, 0, 0), OutdoorAmbient = Color3.fromRGB(255, 0, 0)}):Play()
+
+	local Hug_sound = Instance.new("Sound")
+	Hug_sound.SoundId = "rbxassetid://2866718318"
+	Hug_sound.Parent = Plr.PlayerGui
+	Hug_sound:Play()
+	game.Debris:AddItem(Hug_sound, 2)
+
+	-- Manipulations
+
+	local nearestPlayer, nearestDistance
+
+	for _, player in pairs(game.Players:GetPlayers()) do
+		
+		local character = player.Character
+		
+		local distance = player:DistanceFromCharacter(Plr.Character.HumanoidRootPart.Position)
+		if not character or distance > maxDistance or (nearestDistance and distance >= nearestDistance) or Plr == player then
+			continue
+		end
+		
+		nearestDistance = distance
+		nearestPlayer = player
+
+	end
+	
+	if nearestPlayer and nearestPlayer ~= nil then
+		
+		local ResetBonus = Instance.new("BoolValue")
+		ResetBonus.Value = true
+		ResetBonus.Name = "Reset_Bonus"
+		ResetBonus.Parent = nearestPlayer.Character
+		game.Debris:AddItem(ResetBonus, 10)
+
+		local Quit_Bonus = Instance.new("BoolValue")
+		Quit_Bonus.Value = true
+		Quit_Bonus.Name = "Quit_Bonus"
+		Quit_Bonus.Parent = nearestPlayer.Stats
+		game.Debris:AddItem(Quit_Bonus, 10)
+
+		local Luck = math.random(1, 100)
+
+		-- Hug MSGs --
+
+		if Luck <= 70 then
+
+			-- Common Phrases --
+
+			SayCommonPhrase(nearestPlayer)
+
+		else
+
+			-- Uncommon Phrases --
+
+			SayUncommonPhrase(nearestPlayer)
+
+		end
+
+		-- Hugs In Row Messages
+
+		Hugstreak()
+
+		task.wait(0.25)
+
+		game.TweenService:Create(game.Lighting, TweenInfo.new(0.25, Enum.EasingStyle.Linear), {Ambient = Color3.fromRGB(138, 138, 138), OutdoorAmbient = Color3.fromRGB(128, 128, 128)}):Play()
+			
+	end	
+		
+end)
+
+-- Lvl changed
+
+Lvl.Changed:Connect(function(Value)
+	
+	local LVL_sound = Instance.new("Sound")
+	LVL_sound.SoundId = "rbxassetid://5857559198"
+	LVL_sound.Parent = Plr.PlayerGui
+	LVL_sound:Play()
+	game.Debris:AddItem(LVL_sound, 4)
+	
+	SayLvlChange(Value)
+	
+end)
+
+-- MonthlyInfects_Changed
+
+MonthlyInfects.Changed:Connect(function(Value)
+
+	local MonthlyInfects_Table = Value:split("_")
+
+	MonthlyInfects_Counter.Text = MonthlyInfects_Table[2]
+
+end)
+
+-- Infected Player Resets
+
+Plr.PlayerGui.DescendantAdded:Connect(function(Desc)
+
+	if Desc.Name == "MoneyLabel" then
+
+		task.wait(1)
+
+		local Reset_Plrs = {}
+
+		for _, Other_Plr in ipairs(game.Players:GetPlayers()) do
+
+			if Other_Plr ~= Plr and Other_Plr.Character.Humanoid.Health == 0 and Other_Plr.Team == game.Teams.Human and Other_Plr.Character:FindFirstChild("Reset_Bonus") then
+
+				table.insert(Reset_Plrs, Other_Plr)
+
+				if #Reset_Plrs > 0 then
+
+					local Choosen_Reset_Plr = Reset_Plrs[math.random(1, #Reset_Plrs)]
+
+					Choosen_Reset_Plr.Character:FindFirstChild("Reset_Bonus"):Destroy()
+
+					Total_Resets += 1
+					Total_Resets_Counter.Text = Total_Resets
+
+					SaySelfResetPhrase(Choosen_Reset_Plr)
+
+					local SUS_sound = Instance.new("Sound")
+					SUS_sound.SoundId = "rbxassetid://4492455380"
+					SUS_sound.Volume = 0.25
+					SUS_sound.Parent = Plr.PlayerGui
+					SUS_sound:Play()
+					game.Debris:AddItem(SUS_sound, 5)
+					
+					table.clear(Reset_Plrs)
+
+				end	
+
+			end
+
+		end
+
+	end
+
+end)
+
+-- Leave MSGs
+
+game.Players.PlayerRemoving:Connect(function(Quit_Plr)
+
+	if Quit_Plr ~= Plr and Quit_Plr.Stats:FindFirstChild("Quit_Bonus") then
+
+		Total_RageQuits += 1
+		Total_Quits_Counter.Text = Total_RageQuits
+
+		SayLeavePhrase(Quit_Plr)
+
+		local OMG_sound = Instance.new("Sound")
+		OMG_sound.SoundId = "rbxassetid://336771379"
+		OMG_sound.Volume = 0.2
+		OMG_sound.Parent = Plr.PlayerGui
+		OMG_sound:Play()
+		game.Debris:AddItem(OMG_sound, 3)
+		
+	end
+
+end)
+
+-- Plr died
+
+Plr.Changed:Connect(function(Team)
+
+	task.wait(1)
+
+	if Plr.Team == game.Teams.Human and Plr.Character.Humanoid.Health == 0 and Died_Debounce == false then
+
+		Died_Debounce = true
+
+		local Current_DeathLocation = Plr.Stats.DeathLocation.Value
+		local Current_DeathCause = Plr.Stats.DeathCause.Value
+
+		local Died_sound = Instance.new("Sound")
+		Died_sound.SoundId = "rbxassetid://6598984092"
+		Died_sound.Volume = 1
+		Died_sound.Parent = Plr.PlayerGui
+		Died_sound:Play()
+		game.Debris:AddItem(Died_sound, 3)
+
+		task.wait(0.5)
+		
+		SayDiedPhrase(Current_DeathCause, Current_DeathLocation)
+		
+		Hugs_In_Row = 0
+		Hugs_In_Row_Counter.Text = Hugs_In_Row
+
+		task.wait(5)
+
+		Died_Debounce = false
+
+	end
+end)
+
+-- Admin Chose
+
+local function Admin_Accident(Chose)
+
+	if Chose == "Leave" then
+
+		Plr:Kick("Hope you won't be BANNED, My Lyboomking :)")
+
+	elseif Chose == "Stay" then
+		
+		StayWhenAdminCame()
+
+		local Script_Music = Instance.new("Sound")
+		Script_Music.SoundId = "rbxassetid://1847653078"
+		--Script_Music.Looped = true
+		Script_Music:Play()
+		Script_Music.Name = "Script_Music"
+		Script_Music.Parent = Hugs_In_Row_Gui
+		game.Debris:AddTag(Script_Music, 137.505)
+
+		Plr.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Dead)
+
+		script:Destroy()
+
+	end
+
+end	
+
+local Choose_Bindable_1 = Instance.new("BindableFunction")
+Choose_Bindable_1.OnInvoke = Admin_Accident
+
+-- High_Lvl_Plr_Chose
+
+local function HighLvl_Accident(Chose)
+
+	if Chose == "Leave" then
+
+		Plr:Kick("Ugh, I hope you didn't get caught, my Lyboomking! :)")
+
+	end
+
+end	
+
+local Choose_Bindable_2 = Instance.new("BindableFunction")
+Choose_Bindable_2.OnInvoke = HighLvl_Accident
+
+-- Plr's_Lvl_Check
+
+local function PlrJoined(PlrName)
+
+	task.wait(5)
+
+	if game.Players:FindFirstChild(PlrName) then
+
+		local Joined_Plr: Player = game.Players:FindFirstChild(PlrName)
+
+		local Lvl = Joined_Plr.leaderstats.Level.Value
+
+		if Lvl >= 50 then
+
+			local High_PlrLvl_Alert = Instance.new("Sound")
+			High_PlrLvl_Alert.SoundId = "rbxassetid://6753645454"
+			High_PlrLvl_Alert.Volume = 1
+			High_PlrLvl_Alert:Play()
+			High_PlrLvl_Alert.Name = "High_PlrLvl_Alert"
+			High_PlrLvl_Alert.Parent = Hugs_In_Row_Gui
+			game.Debris:AddItem(High_PlrLvl_Alert, 2.5)
+			
+			game.StarterGui:SetCore("SendNotification", {
+
+				Title = "! " .. Lvl .. " !",
+				Text = Joined_Plr.DisplayName .. " | @" .. Joined_Plr.Name .. " | " .. Joined_Plr.UserId,
+				Icon = game.Players:GetUserThumbnailAsync(Joined_Plr.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size420x420),
+				Duration = 10,
+				Button1 = "Leave",
+				Callback = Choose_Bindable_2
+
+			})
+
+		else
+
+			game.StarterGui:SetCore("SendNotification", {
+
+				Title = "! " .. Lvl .. " !",
+				Text = Joined_Plr.DisplayName .. " | @" .. Joined_Plr.Name .. " | " .. Joined_Plr.UserId,
+				Icon = game.Players:GetUserThumbnailAsync(Joined_Plr.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size420x420),
+				Duration = 3,
+
+			})
+
+		end
+
+	end	
+
+end
+
+-- Joined Plr Checker
+
+game.Players.PlayerAdded:Connect(function(Other_Plr)
+	
+	local Success, Error = pcall(function()
+	
+		local PlrName = Other_Plr.Name
+
+		if Other_Plr:IsInGroup(5054016) then
+
+			local Other_Plr_Rank = Other_Plr:GetRankInGroup(5054016)
+			local Other_Plr_Role = Other_Plr:GetRoleInGroup(5054016)
+
+			if Other_Plr_Rank > 1 then
+				
+				AdminJoinedPhrase(Other_Plr, Other_Plr_Role)
+
+				local Alert = Instance.new("Sound")
+				Alert.Volume = 1
+				Alert.SoundId = "rbxassetid://792323017"
+				Alert:Play()
+				Alert.Parent = Plr.PlayerGui
+				Alert.Name = "Staff_Alert"
+				game.Debris:AddItem(Alert, 12.576)
+
+				game.StarterGui:SetCore("SendNotification", {
+
+					Title = Other_Plr_Role,
+					Text = Other_Plr.DisplayName .. " | @" .. Other_Plr.Name .. " | " .. Other_Plr.UserId,
+					Icon = game.Players:GetUserThumbnailAsync(Other_Plr.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size420x420),
+					Duration = math.huge,
+					Button1 = "Leave",
+					Button2	= "Stay",
+					Callback = Choose_Bindable_1
+
+				})
+
+			end
+
+		end
+		
+		PlrJoined(PlrName)
+		
+	end)	
+
+end)
